@@ -2,11 +2,23 @@
 {% block title %}{{ analysis.filename }} - Investor Scoring{% endblock %}
 {% block content %}
   <div class="logo">
-    <div class="logo-mark"></div>
-    <div class="logo-text">Investor<br>Scoring</div>
+    <img src="/static/ten-capital-logo.webp" alt="Ten Capital Network" class="logo-img">
   </div>
 
   <p><a href="/">&larr; Back to upload</a></p>
+
+  {% if request.query_params.get("uploaded") %}
+    <div class="success">
+      {% if analysis.status == "complete" %}
+        Deck uploaded and scored successfully.
+      {% elif analysis.status == "scoring_failed" %}
+        Deck uploaded and extracted successfully - scoring hit an issue below.
+      {% else %}
+        Deck uploaded successfully.
+      {% endif %}
+    </div>
+  {% endif %}
+
   <span class="badge">{{ analysis.status }}</span>
   <h1>{{ analysis.filename }}</h1>
   <p class="muted">{{ analysis.source_format|upper }} - {{ analysis.slide_count }} slides</p>
