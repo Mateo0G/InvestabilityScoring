@@ -18,7 +18,10 @@
     <div class="dropzone">
       <input type="file" id="file-input" name="file" accept=".pdf,.pptx" required>
       <div class="hint">.pptx &middot; .pdf &middot; up to 25 MB</div>
-      <div id="file-attached" class="success file-attached" style="display:none;"></div>
+      <div id="file-attached" class="success file-attached" style="display:none;">
+        <span id="file-attached-text"></span>
+        <button type="button" id="remove-file-btn" class="remove-file-btn">Remove</button>
+      </div>
     </div>
     <button type="submit" id="submit-btn">Score this deck</button>
   </form>
@@ -33,16 +36,27 @@
     </div>
   </div>
 
+  <p class="muted" style="text-align:center; font-size: 0.8rem;">
+    A copy of every generated analysis is emailed to {{ results_email_to }}.
+  </p>
+
   <script>
     const fileInput = document.getElementById('file-input');
     const fileAttached = document.getElementById('file-attached');
+    const fileAttachedText = document.getElementById('file-attached-text');
+
     fileInput.addEventListener('change', () => {
       if (fileInput.files.length > 0) {
-        fileAttached.textContent = fileInput.files[0].name + ' attached';
+        fileAttachedText.textContent = fileInput.files[0].name + ' attached';
         fileAttached.style.display = 'flex';
       } else {
         fileAttached.style.display = 'none';
       }
+    });
+
+    document.getElementById('remove-file-btn').addEventListener('click', () => {
+      fileInput.value = '';
+      fileAttached.style.display = 'none';
     });
 
     document.getElementById('upload-form').addEventListener('submit', () => {
