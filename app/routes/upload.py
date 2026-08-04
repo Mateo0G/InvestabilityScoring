@@ -112,7 +112,7 @@ async def upload_deck(request: Request, file: UploadFile, db: Session = Depends(
 
     db.commit()
 
-    response = RedirectResponse(url=f"/analyses/{analysis.id}", status_code=303)
+    response = RedirectResponse(url=f"/analyses/{analysis.id}?uploaded=1", status_code=303)
     response.set_cookie(SESSION_COOKIE_NAME, session_id, httponly=True, samesite="lax")
     return response
 
