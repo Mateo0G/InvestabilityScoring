@@ -14,13 +14,44 @@
     <div class="error">{{ error }}</div>
   {% endif %}
 
-  <form class="upload" action="/upload" method="post" enctype="multipart/form-data">
+  <form class="upload" id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
     <div class="dropzone">
-      <input type="file" name="file" accept=".pdf,.pptx" required>
+      <input type="file" id="file-input" name="file" accept=".pdf,.pptx" required>
       <div class="hint">.pptx &middot; .pdf &middot; up to 25 MB</div>
+      <div id="file-attached" class="success file-attached" style="display:none;"></div>
     </div>
-    <button type="submit">Score this deck</button>
+    <button type="submit" id="submit-btn">Score this deck</button>
   </form>
+
+  <div id="scoring-status" class="card scoring-status" style="display:none;">
+    <div class="spinner"></div>
+    <div>
+      <strong>Scoring your deck&hellip;</strong>
+      <p class="muted" style="margin: 4px 0 0;">
+        Claude is analyzing it against the investment readiness rubric. This can take up to a minute.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const fileAttached = document.getElementById('file-attached');
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        fileAttached.textContent = fileInput.files[0].name + ' attached';
+        fileAttached.style.display = 'flex';
+      } else {
+        fileAttached.style.display = 'none';
+      }
+    });
+
+    document.getElementById('upload-form').addEventListener('submit', () => {
+      if (!fileInput.files.length) return;
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('submit-btn').textContent = 'Scoring…';
+      document.getElementById('scoring-status').style.display = 'flex';
+    });
+  </script>
 
   {% if analyses %}
     <h2>Past Uploads</h2>
