@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Investor Scoring{% endblock %}</title>
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --bg-glow-1: rgba(139, 92, 246, 0.16);
+      --bg-glow-2: rgba(244, 100, 95, 0.14);
+      --card-bg: rgba(20, 26, 46, 0.88);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --track-bg: rgba(255, 255, 255, 0.06);
+      --text-primary: #e8ecf5;
+      --text-secondary: #b7bfd1;
+      --text-muted: #7c869c;
+      --accent-teal: #2dd4c8;
+      --accent-from: #f4645f;
+      --accent-to: #f5a742;
+      --error-bg: rgba(244, 100, 95, 0.12);
+      --error-border: rgba(244, 100, 95, 0.4);
+      --error-text: #ff9d98;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --font-sans: -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      max-width: 760px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+      color: var(--text-primary);
+      background: var(--bg);
+      background-image:
+        radial-gradient(600px 400px at 10% 0%, var(--bg-glow-1), transparent 60%),
+        radial-gradient(600px 400px at 90% 30%, var(--bg-glow-2), transparent 60%);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    a { color: var(--accent-teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-teal);
+      margin-bottom: 10px;
+    }
+    .badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      box-shadow: 0 0 8px var(--accent-teal);
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px 14px 8px 8px;
+      margin-bottom: 24px;
+    }
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: conic-gradient(from 200deg, var(--accent-from), var(--accent-to), var(--accent-teal), var(--accent-from));
+    }
+    .logo-text {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: 0.03em;
+      color: #1a1a2e;
+      text-transform: uppercase;
+    }
+
+    h1 { font-size: 1.7rem; margin: 0 0 8px; letter-spacing: -0.01em; }
+    h2 { font-size: 1.05rem; color: var(--text-primary); margin: 28px 0 12px; }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .muted { color: var(--text-muted); font-size: 0.88rem; }
+
+    .error {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+
+    form.upload {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .dropzone {
+      border: 1.5px dashed rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      padding: 36px 20px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .dropzone input[type="file"] {
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+    .dropzone .hint {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+      letter-spacing: 0.02em;
+    }
+
+    button, .btn {
+      display: block;
+      width: 100%;
+      background: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+      color: #1a1208;
+      font-weight: 700;
+      border: none;
+      padding: 14px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-family: var(--font-sans);
+    }
+    button:hover, .btn:hover { filter: brightness(1.05); }
+
+    .footer-note {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 36px;
+    }
+
+    pre.preview {
+      white-space: pre-wrap;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      padding: 14px;
+      border-radius: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+    }
+
+    ul, ol { padding-left: 22px; }
+    li { margin-bottom: 6px; color: var(--text-secondary); }
+
+    /* Category bar chart */
+    .bar-row {
+      display: grid;
+      grid-template-columns: 200px 1fr 44px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .bar-label {
+      font-size: 0.85rem;
+      color: var(--text-primary);
+    }
+    .bar-label .weight {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .bar-track {
+      background: var(--track-bg);
+      border-radius: 4px;
+      height: 20px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 0 4px 4px 0;
+      background: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+    }
+    .bar-value {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      text-align: right;
+    }
+
+    @media (max-width: 560px) {
+      .bar-row { grid-template-columns: 120px 1fr 36px; }
+    }
+  </style>
+</head>
+<body>
+  {% block content %}{% endblock %}
+</body>
+</html>

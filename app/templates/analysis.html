@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ analysis.filename }} - Investor Scoring{% endblock %}
+{% block content %}
+  <div class="logo">
+    <div class="logo-mark"></div>
+    <div class="logo-text">Investor<br>Scoring</div>
+  </div>
+
+  <p><a href="/">&larr; Back to upload</a></p>
+  <span class="badge">{{ analysis.status }}</span>
+  <h1>{{ analysis.filename }}</h1>
+  <p class="muted">{{ analysis.source_format|upper }} - {{ analysis.slide_count }} slides</p>
+
+  {% if analysis.status == "complete" %}
+    <div class="card" style="text-align:center; padding: 28px 20px;">
+      <div class="muted" style="text-transform:uppercase; letter-spacing:0.08em; font-size:0.75rem;">Overall Investability Score</div>
+      <div class="gradient-text" style="font-size: 3rem; font-weight: 700; line-height: 1.2;">{{ analysis.overall_score }}<span style="font-size:1.4rem; color: var(--text-muted); -webkit-text-fill-color: var(--text-muted);">/100</span></div>
+    </div>
+
+    <h2>Category Breakdown</h2>
+    <div class="card">
+      {% for c in categories %}
+        {% set cs = analysis.category_scores.get(c.key) %}
+        {% if cs %}
+          <div class="bar-row">
+            <div class="bar-label">{{ c.label }}<span class="weight">weight {{ c.weight }}%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: {{ cs.score }}%;"></div></div>
+            <div class="bar-value">{{ cs.score }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% for c in categories %}
+      {% set cs = analysis.category_scores.get(c.key) %}
+      {% if cs %}
+        <div class="card">
+          <strong>{{ c.label }}</strong> <span class="muted">- {{ cs.score }}/100</span>
+          <p class="muted" style="color: var(--text-secondary);">{{ cs.justification }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <h2>Strengths</h2>
+    <ul>
+      {% for s in analysis.strengths %}<li>{{ s }}</li>{% endfor %}
+    </ul>
+
+    <h2>Weaknesses</h2>
+    <ul>
+      {% for w in analysis.weaknesses %}<li>{{ w }}</li>{% endfor %}
+    </ul>
+
+    <h2>Fix These Before You Pitch Investors</h2>
+    <ol>
+      {% for a in analysis.action_items %}<li>{{ a }}</li>{% endfor %}
+    </ol>
+
+    <p class="muted">
+      Claude usage: {{ analysis.input_tokens }} input tokens, {{ analysis.output_tokens }} output tokens,
+      estimated cost ${{ "%.4f"|format(analysis.estimated_cost_usd) }}
+    </p>
+
+  {% elif analysis.status == "scoring_failed" %}
+    <div class="error">{{ analysis.error_message }}</div>
+    <h2>Extracted Text Preview</h2>
+    <p class="muted">Extraction succeeded, but scoring failed. Here's what was extracted.</p>
+    <pre class="preview">{{ analysis.extracted_text[:4000] }}{% if analysis.extracted_text|length > 4000 %}...{% endif %}</pre>
+
+  {% elif analysis.status == "extracted" %}
+    <div class="card">
+      <strong>Extraction succeeded.</strong>
+      <p class="muted">Scoring is in progress or was not run for this analysis.</p>
+    </div>
+    <h2>Extracted Text Preview</h2>
+    <pre class="preview">{{ analysis.extracted_text[:4000] }}{% if analysis.extracted_text|length > 4000 %}...{% endif %}</pre>
+
+  {% else %}
+    <div class="card">
+      <strong>Status: {{ analysis.status }}</strong>
+      {% if analysis.error_message %}<p class="error">{{ analysis.error_message }}</p>{% endif %}
+    </div>
+  {% endif %}
+
+  <div class="footer-note">Powered by Claude</div>
+{% endblock %}

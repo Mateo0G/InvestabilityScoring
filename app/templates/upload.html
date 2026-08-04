@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Investor Scoring - Upload{% endblock %}
+{% block content %}
+  <div class="logo">
+    <div class="logo-mark"></div>
+    <div class="logo-text">Investor<br>Scoring</div>
+  </div>
+
+  <span class="badge">Deck Analyzer</span>
+  <h1>Pitch Deck &rarr; <span class="gradient-text">Investability Score</span></h1>
+  <p class="muted">Upload a pitch deck and get an in-depth Investment Readiness Score,
+    analyzed and structured by Claude against a fixed 10-category rubric.</p>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form class="upload" action="/upload" method="post" enctype="multipart/form-data">
+    <div class="dropzone">
+      <input type="file" name="file" accept=".pdf,.pptx" required>
+      <div class="hint">.pptx &middot; .pdf &middot; up to 25 MB</div>
+    </div>
+    <button type="submit">Score this deck</button>
+  </form>
+
+  {% if analyses %}
+    <h2>Past Uploads</h2>
+    {% for a in analyses %}
+      <div class="card">
+        <strong><a href="/analyses/{{ a.id }}">{{ a.filename }}</a></strong>
+        {% if a.overall_score is not none %}
+          <span class="gradient-text" style="font-weight:700; float:right;">{{ a.overall_score }}/100</span>
+        {% endif %}
+        <div class="muted">{{ a.source_format|upper }} - {{ a.slide_count }} slides - {{ a.status }} - {{ a.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="footer-note">Powered by Claude</div>
+{% endblock %}
