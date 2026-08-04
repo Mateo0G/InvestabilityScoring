@@ -11,6 +11,7 @@ from app.extraction.normalize import DeckExtractionError
 from app.extraction.pdf import extract_pdf
 from app.extraction.pptx import extract_pptx
 from app.models.db import Analysis, get_db
+from app.notifications.email import send_result_email
 from app.scoring.pipeline import run_scoring_pipeline
 from app.scoring.rubric import CATEGORIES, category_by_key
 
@@ -20,6 +21,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 templates.env.globals["category_label"] = lambda key: category_by_key(key).label
 templates.env.globals["category_weight"] = lambda key: category_by_key(key).weight
+templates.env.globals["results_email_to"] = get_settings().results_email_to
 
 SESSION_COOKIE_NAME = "session_id"
 
@@ -111,6 +113,9 @@ async def upload_deck(request: Request, file: UploadFile, db: Session = Depends(
         analysis.estimated_cost_usd = pipeline_result.total_cost_usd
 
     db.commit()
+
+    if analysis.status == "complete":
+        send_result_email(analysis)
 
     response = RedirectResponse(url=f"/analyses/{analysis.id}?uploaded=1", status_code=303)
     response.set_cookie(SESSION_COOKIE_NAME, session_id, httponly=True, samesite="lax")
