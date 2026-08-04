@@ -62,6 +62,12 @@ Run tests:
    - `ANTHROPIC_API_KEY` — required.
    - `CLAUDE_EXTRACTION_MODEL` / `CLAUDE_SCORING_MODEL` — optional, defaults match `.env.example`.
    - `MAX_UPLOAD_MB` — optional, default 25.
+   - `RESEND_API_KEY` — optional. If unset, result emails are silently skipped (logged, never
+     blocks scoring). Get one from [resend.com](https://resend.com).
+   - `RESEND_FROM_EMAIL` — optional, defaults to Resend's sandbox sender `onboarding@resend.dev`
+     (works without a verified domain, but Resend only delivers it to the email address on the
+     Resend account itself). Set to a verified-domain address for real production sending.
+   - `RESULTS_EMAIL_TO` — optional, defaults to `mateo.ghercioiu@gmail.com`.
    - Do **not** set `DATABASE_URL` yourself - the Postgres plugin provides it.
 4. Railway builds via Nixpacks using `runtime.txt` (pins Python 3.12 - `pydantic-core` has no
    prebuilt wheel for 3.14 yet) and `requirements.txt`, then runs the command in `Procfile` /
@@ -98,11 +104,17 @@ Run tests:
     aggregation (the overall score is computed in code, never trusted from the model).
 - Upload route calls the pipeline synchronously after extraction and persists results;
   a failed Claude call is caught and shown as a clean error without losing the extraction.
-- Dark-themed Jinja2 UI (`app/templates/`): upload form, session history, extraction preview,
-  full results page with a horizontal bar chart for the category breakdown (score, weight,
-  justification per category), strengths/weaknesses, prioritized action items, token/cost usage.
-- 15 tests, all Claude API calls mocked (`tests/test_scoring_pipeline.py`,
-  `tests/test_extraction.py`) — no real API key needed to run the test suite.
+- Dark-themed Jinja2 UI (`app/templates/`): upload form (file-attached confirmation with a
+  remove/clear control, scoring-in-progress state with a spinner), session history, extraction
+  preview, full results page with a horizontal bar chart for the category breakdown (score,
+  weight, justification per category), strengths/weaknesses, prioritized action items,
+  token/cost usage.
+- Result notification email (`app/notifications/email.py`): on successful scoring, sends an
+  HTML summary (score, category breakdown, strengths/weaknesses/action items) via Resend to
+  `RESULTS_EMAIL_TO`. Best-effort - missing API key or a Resend failure is logged and never
+  blocks or fails the scoring request.
+- 20 tests, all Claude API and Resend calls mocked (`tests/test_scoring_pipeline.py`,
+  `tests/test_extraction.py`, `tests/test_email.py`) — no real API keys needed to run the suite.
 - Railway deployment config: `Procfile`, `railway.json`, `runtime.txt` (pins Python 3.12),
   `DATABASE_URL` normalization for Postgres in `app/models/db.py`.
 
