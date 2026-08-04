@@ -15,6 +15,13 @@ class Settings(BaseSettings):
 
     max_upload_mb: int = 25
 
+    resend_api_key: str = ""
+    # Resend's sandbox sender - deliverable without a verified domain, but only
+    # to the email address associated with the Resend account. Override with a
+    # verified domain sender in production.
+    resend_from_email: str = "onboarding@resend.dev"
+    results_email_to: str = "mateo.ghercioiu@gmail.com"
+
 
 @lru_cache
 def get_settings() -> Settings:
