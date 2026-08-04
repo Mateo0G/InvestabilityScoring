@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -6,7 +8,9 @@ from app.routes import upload
 
 app = FastAPI(title="Investor Scoring")
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+_STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+os.makedirs(_STATIC_DIR, exist_ok=True)
+app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
 app.include_router(upload.router)
 
 
