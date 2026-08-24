@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     # to the email address associated with the Resend account. Override with a
     # verified domain sender in production.
     resend_from_email: str = "onboarding@resend.dev"
-    results_email_to: str = "mateo.ghercioiu@gmail.com"
+    results_email_to: str = "info@tencapital.group"
 
 
 @lru_cache
