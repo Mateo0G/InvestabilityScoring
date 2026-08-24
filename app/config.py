@@ -16,10 +16,8 @@ class Settings(BaseSettings):
     max_upload_mb: int = 25
 
     resend_api_key: str = ""
-    # Resend's sandbox sender - deliverable without a verified domain, but only
-    # to the email address associated with the Resend account. Override with a
-    # verified domain sender in production.
-    resend_from_email: str = "onboarding@resend.dev"
+    # tencapital.group is verified in Resend, so mail can go to any recipient.
+    resend_from_email: str = "results@tencapital.group"
     results_email_to: str = "info@tencapital.group"
 
 

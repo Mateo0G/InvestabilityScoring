@@ -64,9 +64,8 @@ Run tests:
    - `MAX_UPLOAD_MB` — optional, default 25.
    - `RESEND_API_KEY` — optional. If unset, result emails are silently skipped (logged, never
      blocks scoring). Get one from [resend.com](https://resend.com).
-   - `RESEND_FROM_EMAIL` — optional, defaults to Resend's sandbox sender `onboarding@resend.dev`
-     (works without a verified domain, but Resend only delivers it to the email address on the
-     Resend account itself). Set to a verified-domain address for real production sending.
+   - `RESEND_FROM_EMAIL` — optional, defaults to `results@tencapital.group`. `tencapital.group`
+     is verified in Resend, so mail from this address can go to any recipient.
    - `RESULTS_EMAIL_TO` — optional, defaults to `info@tencapital.group`.
    - Do **not** set `DATABASE_URL` yourself - the Postgres plugin provides it.
 4. Railway builds via Nixpacks using `runtime.txt` (pins Python 3.12 - `pydantic-core` has no
