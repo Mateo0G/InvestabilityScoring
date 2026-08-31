@@ -341,14 +341,5 @@ def build_analysis_pdf(analysis: Analysis) -> bytes:
             _numbered_list(analysis.action_items),
         ]))
 
-    if analysis.estimated_cost_usd is not None:
-        story.append(Spacer(1, 10))
-        story.append(Paragraph(
-            f"Claude usage: {analysis.input_tokens} input tokens, "
-            f"{analysis.output_tokens} output tokens, "
-            f"estimated cost ${analysis.estimated_cost_usd:.4f}",
-            _STYLES["muted"],
-        ))
-
     doc.build(story, canvasmaker=_NumberedCanvas)
     return buffer.getvalue()

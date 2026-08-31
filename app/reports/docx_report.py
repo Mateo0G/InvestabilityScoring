@@ -406,17 +406,6 @@ def build_analysis_docx(analysis: Analysis) -> bytes:
         _section_header(doc, "Fix These Before You Pitch Investors")
         _numbered_list(doc, analysis.action_items)
 
-    if analysis.estimated_cost_usd is not None:
-        usage_p = doc.add_paragraph()
-        usage_p.paragraph_format.space_before = Pt(14)
-        _add_run(
-            usage_p,
-            f"Claude usage: {analysis.input_tokens} input tokens, "
-            f"{analysis.output_tokens} output tokens, "
-            f"estimated cost ${analysis.estimated_cost_usd:.4f}",
-            size=8.5, color=MUTED,
-        )
-
     buffer = io.BytesIO()
     doc.save(buffer)
     return buffer.getvalue()
