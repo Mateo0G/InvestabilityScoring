@@ -6,16 +6,17 @@
   <title>{% block title %}Investor Scoring{% endblock %}</title>
   <style>
     :root {
-      --bg: #0a0e1a;
-      --bg-glow-1: rgba(139, 92, 246, 0.16);
-      --bg-glow-2: rgba(244, 100, 95, 0.14);
-      --card-bg: rgba(20, 26, 46, 0.88);
+      --bg: #0d1b32;
+      --bg-glow-1: rgba(244, 100, 95, 0.16);
+      --bg-glow-2: rgba(245, 167, 66, 0.14);
+      --bg-glow-3: rgba(63, 193, 224, 0.20);
+      --card-bg: rgba(30, 47, 74, 0.85);
       --card-border: rgba(255, 255, 255, 0.08);
-      --track-bg: rgba(255, 255, 255, 0.06);
-      --text-primary: #e8ecf5;
-      --text-secondary: #b7bfd1;
-      --text-muted: #7c869c;
-      --accent-teal: #2dd4c8;
+      --track-bg: rgba(255, 255, 255, 0.07);
+      --text-primary: #eaf1fb;
+      --text-secondary: #b6c4dc;
+      --text-muted: #8398b8;
+      --accent-teal: #3fc1e0;
       --accent-from: #f4645f;
       --accent-to: #f5a742;
       --error-bg: rgba(244, 100, 95, 0.12);
@@ -35,8 +36,9 @@
       color: var(--text-primary);
       background: var(--bg);
       background-image:
-        radial-gradient(600px 400px at 10% 0%, var(--bg-glow-1), transparent 60%),
-        radial-gradient(600px 400px at 90% 30%, var(--bg-glow-2), transparent 60%);
+        radial-gradient(600px 400px at 8% 0%, var(--bg-glow-1), transparent 60%),
+        radial-gradient(600px 400px at 92% 15%, var(--bg-glow-2), transparent 60%),
+        radial-gradient(700px 500px at 50% 100%, var(--bg-glow-3), transparent 65%);
       background-attachment: fixed;
       min-height: 100vh;
     }
@@ -101,8 +103,8 @@
     }
 
     .success {
-      background: rgba(45, 212, 200, 0.1);
-      border: 1px solid rgba(45, 212, 200, 0.4);
+      background: rgba(63, 193, 224, 0.12);
+      border: 1px solid rgba(63, 193, 224, 0.4);
       color: var(--accent-teal);
       padding: 12px 16px;
       border-radius: 8px;
