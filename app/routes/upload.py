@@ -12,6 +12,7 @@ from app.extraction.pdf import extract_pdf
 from app.extraction.pptx import extract_pptx
 from app.models.db import Analysis, get_db
 from app.notifications.email import send_result_email
+from app.reports.docx_report import build_analysis_docx
 from app.reports.pdf import build_analysis_pdf
 from app.scoring.pipeline import run_scoring_pipeline
 from app.scoring.rubric import CATEGORIES, category_by_key
@@ -141,15 +142,22 @@ def view_analysis(analysis_id: int, request: Request, db: Session = Depends(get_
     return response
 
 
-@router.get("/analyses/{analysis_id}/pdf")
-def download_analysis_pdf(analysis_id: int, request: Request, db: Session = Depends(get_db)):
-    session_id = get_or_create_session_id(request)
+def _get_completed_analysis(analysis_id: int, session_id: str, db: Session) -> Analysis | None:
     analysis = (
         db.query(Analysis)
         .filter(Analysis.id == analysis_id, Analysis.session_id == session_id)
         .first()
     )
     if analysis is None or analysis.status != "complete":
+        return None
+    return analysis
+
+
+@router.get("/analyses/{analysis_id}/pdf")
+def download_analysis_pdf(analysis_id: int, request: Request, db: Session = Depends(get_db)):
+    session_id = get_or_create_session_id(request)
+    analysis = _get_completed_analysis(analysis_id, session_id, db)
+    if analysis is None:
         return _render_error(
             request, db, session_id, "Analysis not found or not yet complete.", status_code=404
         )
@@ -159,6 +167,28 @@ def download_analysis_pdf(analysis_id: int, request: Request, db: Session = Depe
     response = Response(content=pdf_bytes, media_type="application/pdf")
     response.headers["Content-Disposition"] = (
         f'attachment; filename="{base_name}-investability-score.pdf"'
+    )
+    response.set_cookie(SESSION_COOKIE_NAME, session_id, httponly=True, samesite="lax")
+    return response
+
+
+@router.get("/analyses/{analysis_id}/docx")
+def download_analysis_docx(analysis_id: int, request: Request, db: Session = Depends(get_db)):
+    session_id = get_or_create_session_id(request)
+    analysis = _get_completed_analysis(analysis_id, session_id, db)
+    if analysis is None:
+        return _render_error(
+            request, db, session_id, "Analysis not found or not yet complete.", status_code=404
+        )
+
+    docx_bytes = build_analysis_docx(analysis)
+    base_name = analysis.filename.rsplit(".", 1)[0].replace('"', "")
+    response = Response(
+        content=docx_bytes,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    )
+    response.headers["Content-Disposition"] = (
+        f'attachment; filename="{base_name}-investability-score.docx"'
     )
     response.set_cookie(SESSION_COOKIE_NAME, session_id, httponly=True, samesite="lax")
     return response

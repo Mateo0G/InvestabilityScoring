@@ -24,7 +24,10 @@
   <p class="muted">{{ analysis.source_format|upper }} - {{ analysis.slide_count }} slides</p>
 
   {% if analysis.status == "complete" %}
-    <a href="/analyses/{{ analysis.id }}/pdf" class="btn" style="display:inline-block; width:auto; padding:10px 20px; margin-bottom:20px;">Download PDF</a>
+    <div style="margin-bottom:20px;">
+      <a href="/analyses/{{ analysis.id }}/pdf" class="btn" style="display:inline-block; width:auto; padding:10px 20px;">Download PDF</a>
+      <a href="/analyses/{{ analysis.id }}/docx" class="btn" style="display:inline-block; width:auto; padding:10px 20px; margin-left:10px; background:none; border:1px solid var(--card-border); color:var(--text-primary);">Download DOCX</a>
+    </div>
   {% endif %}
 
   {% if analysis.status == "complete" %}
