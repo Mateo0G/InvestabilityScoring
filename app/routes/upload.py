@@ -2,7 +2,7 @@ import logging
 import uuid
 
 from fastapi import APIRouter, Depends, Request, UploadFile
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -12,6 +12,7 @@ from app.extraction.pdf import extract_pdf
 from app.extraction.pptx import extract_pptx
 from app.models.db import Analysis, get_db
 from app.notifications.email import send_result_email
+from app.reports.pdf import build_analysis_pdf
 from app.scoring.pipeline import run_scoring_pipeline
 from app.scoring.rubric import CATEGORIES, category_by_key
 
@@ -135,6 +136,29 @@ def view_analysis(analysis_id: int, request: Request, db: Session = Depends(get_
 
     response = templates.TemplateResponse(
         "analysis.html", {"request": request, "analysis": analysis, "categories": CATEGORIES}
+    )
+    response.set_cookie(SESSION_COOKIE_NAME, session_id, httponly=True, samesite="lax")
+    return response
+
+
+@router.get("/analyses/{analysis_id}/pdf")
+def download_analysis_pdf(analysis_id: int, request: Request, db: Session = Depends(get_db)):
+    session_id = get_or_create_session_id(request)
+    analysis = (
+        db.query(Analysis)
+        .filter(Analysis.id == analysis_id, Analysis.session_id == session_id)
+        .first()
+    )
+    if analysis is None or analysis.status != "complete":
+        return _render_error(
+            request, db, session_id, "Analysis not found or not yet complete.", status_code=404
+        )
+
+    pdf_bytes = build_analysis_pdf(analysis)
+    base_name = analysis.filename.rsplit(".", 1)[0].replace('"', "")
+    response = Response(content=pdf_bytes, media_type="application/pdf")
+    response.headers["Content-Disposition"] = (
+        f'attachment; filename="{base_name}-investability-score.pdf"'
     )
     response.set_cookie(SESSION_COOKIE_NAME, session_id, httponly=True, samesite="lax")
     return response

@@ -24,6 +24,10 @@
   <p class="muted">{{ analysis.source_format|upper }} - {{ analysis.slide_count }} slides</p>
 
   {% if analysis.status == "complete" %}
+    <a href="/analyses/{{ analysis.id }}/pdf" class="btn" style="display:inline-block; width:auto; padding:10px 20px; margin-bottom:20px;">Download PDF</a>
+  {% endif %}
+
+  {% if analysis.status == "complete" %}
     <div class="card" style="text-align:center; padding: 28px 20px;">
       <div class="muted" style="text-transform:uppercase; letter-spacing:0.08em; font-size:0.75rem;">Overall Investability Score</div>
       <div class="gradient-text" style="font-size: 3rem; font-weight: 700; line-height: 1.2;">{{ analysis.overall_score }}<span style="font-size:1.4rem; color: var(--text-muted); -webkit-text-fill-color: var(--text-muted);">/100</span></div>
